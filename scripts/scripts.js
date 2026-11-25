@@ -143,6 +143,29 @@ function decorateButtons(main) {
 }
 
 /**
+ * Wraps short, plain-text paragraphs that label the heading or block right
+ * after them (e.g. "Featured") in a `.eyebrow` div, so they can be styled
+ * without adding classes to authored text.
+ * @param {Element} main The container element
+ */
+function decorateEyebrows(main) {
+  main.querySelectorAll('.default-content-wrapper > p').forEach((p) => {
+    const text = p.textContent.trim();
+    if (!text || text.length > 40 || p.children.length) return;
+    const next = p.nextElementSibling;
+    const labelsHeading = next && /^H[1-6]$/.test(next.tagName);
+    const wrapper = p.parentElement;
+    const labelsBlock = !next && wrapper.nextElementSibling
+      && !wrapper.nextElementSibling.classList.contains('default-content-wrapper');
+    if (!labelsHeading && !labelsBlock) return;
+    const eyebrow = document.createElement('div');
+    eyebrow.className = 'eyebrow';
+    p.before(eyebrow);
+    eyebrow.append(p);
+  });
+}
+
+/**
  * Decorates the main element.
  * @param {Element} main The main element
  */
@@ -153,6 +176,7 @@ export function decorateMain(main) {
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  decorateEyebrows(main);
 }
 
 /**
